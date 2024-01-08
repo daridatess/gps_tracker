@@ -1,5 +1,6 @@
 
 const meCoords = [];
+const getOutInfo = document.querySelector('#accuracy');
 
 const arrDogCoords = [[45.51, -122.68],
 [37.77, -122.43],
@@ -28,6 +29,8 @@ const getPosition = (position) => {
     console.log(position);
 
     let { latitude = latitude, longitude = longitude, accuracy = accuracy } = position.coords;
+
+    getOutInfo.innerHTML = accuracy
 
     console.log(latitude, longitude, accuracy);
 

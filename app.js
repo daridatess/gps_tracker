@@ -1,54 +1,52 @@
 
-const arrCoords = [];
+const meCoords = [];
 
-const arrDog = [[45.51, -122.68],
+const arrDogCoords = [[45.51, -122.68],
 [37.77, -122.43],
 [34.04, -118.2]];
 
 
-const getPosition = (dataCoords) => {
-    const crd = dataCoords.coords;
+let map = L.map('map').setView([53, 27], 10);
 
-    console.log(crd);
+let osm = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+});
+osm.addTo(map);
 
-    arrCoords.push(crd.latitude, crd.longitude)
+if (!navigator.geolocation) {
+    console.log('You browser not feature!')
+} else {
+    setInterval(() => {
+        navigator.geolocation.getCurrentPosition(getPosition, errorMessage)
+    }, 5000)
+}
 
-    stratCard()
+let marker, circle;
+const getPosition = (position) => {
+
+    console.log(position);
+
+    let { latitude = latitude, longitude = longitude, accuracy = accuracy } = position.coords;
+
+    console.log(latitude, longitude, accuracy);
+
+    if (marker) {
+        map.removeLayer(marker)
+    }
+
+    if (circle) {
+        map.removeLayer(circle)
+    }
+
+    marker = L.marker([latitude, longitude]);
+    circle = L.circle([latitude, longitude], { radius: accuracy });
+
+    let featureGroup = L.featureGroup([marker, circle]).addTo(map)
+
+    map.fitBounds(featureGroup.getBounds());
 }
 
 const errorMessage = (error) => {
     console.log('message: ' + error)
 }
-
-navigator.geolocation.getCurrentPosition(getPosition, errorMessage);
-
-
-const stratCard = () => {
-
-    let map = L.map('map', {
-        center: arrCoords,
-        zoom: 15
-    });
-
-
-    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 19,
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-    }).addTo(map);
-
-    L.marker(arrCoords).addTo(map)
-        .bindPopup('Я!.')
-        .openPopup();
-
-
-
-    let polyline = L.polyline(arrDog, { color: 'red' }).addTo(map);
-
-    map.fitBounds(polyline.getBounds());
-}
-
-
-// console.log(geoPosition)
-
-// console.log(geoPosition)
-
